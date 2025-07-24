@@ -1,5 +1,6 @@
 # Ignore all APWorld files (custom game implementations)
 *.apworld
+*.zip
 
 # Keep the README for instructions
 !README.md
