@@ -5,7 +5,7 @@ echo "Generating Archipelago world..."
 
 # Create necessary directories
 mkdir -p Archipelago/Players
-mkdir -p Archipelago/worlds
+mkdir -p Archipelago/custom_worlds
 mkdir -p output
 
 # Copy user YAML files to Players directory
@@ -27,9 +27,7 @@ fi
 # Copy APWorld files to worlds directory if they exist
 if [ -d "worlds" ] && [ "$(ls -A worlds/*.apworld 2>/dev/null)" ]; then
     echo "Copying APWorld files..."
-    # Create worlds directory if it doesn't exist
-    mkdir -p Archipelago/worlds/
-    cp worlds/*.apworld Archipelago/worlds/ 2>/dev/null || true
+    cp worlds/*.apworld Archipelago/custom_worlds/ 2>/dev/null || true
 fi
 
 # Change to Archipelago directory for generation
@@ -45,9 +43,6 @@ if [ ! -d "output" ] || [ -z "$(ls -A output/*.archipelago 2>/dev/null)" ]; then
     exit 1
 fi
 
-# Move output to the expected location
-mv output/* ../output/
-
 echo "World generation completed successfully"
 echo "Generated files:"
-ls -la ../output/
+ls -la output/*

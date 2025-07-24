@@ -21,9 +21,8 @@ echo "Downloading from: $DOWNLOAD_URL"
 # Download the latest release
 wget -O archipelago-latest.tar.gz "$DOWNLOAD_URL"
 
-# Create Archipelago directory and extract directly into it
-mkdir -p Archipelago
-tar -xzf archipelago-latest.tar.gz -C Archipelago --strip-components=0
+# Extract release
+tar -xzf archipelago-latest.tar.gz
 
 # Clean up
 rm archipelago-latest.tar.gz
