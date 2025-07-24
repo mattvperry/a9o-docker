@@ -3,10 +3,12 @@ set -e
 
 echo "Generating Archipelago world..."
 
+# Change to Archipelago directory for generation
+cd Archipelago
+
 # Create necessary directories
-mkdir -p Archipelago/Players
-mkdir -p Archipelago/custom_worlds
-mkdir -p output
+mkdir -p Players
+mkdir -p custom_worlds
 
 # Copy user YAML files to Players directory
 if [ -d "players" ] && [ "$(ls -A players/*.y*ml 2>/dev/null)" ]; then
@@ -29,9 +31,6 @@ if [ -d "worlds" ] && [ "$(ls -A worlds/*.apworld 2>/dev/null)" ]; then
     echo "Copying APWorld files..."
     cp worlds/*.apworld Archipelago/custom_worlds/ 2>/dev/null || true
 fi
-
-# Change to Archipelago directory for generation
-cd Archipelago
 
 # Run the generation
 echo "Running Archipelago generation..."

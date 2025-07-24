@@ -3,6 +3,9 @@ set -e
 
 echo "Starting Archipelago server..."
 
+# Change to Archipelago directory
+cd Archipelago
+
 # Find the .archipelago file in the output directory
 ARCHIPELAGO_FILE=$(find output -name "*.archipelago" | head -1)
 
@@ -20,9 +23,6 @@ SERVER_PORT=${ARCHIPELAGO_PORT:-38281}
 SERVER_PASSWORD=${ARCHIPELAGO_PASSWORD:-}
 
 echo "Starting Archipelago server on port $SERVER_PORT"
-
-# Change to Archipelago directory
-cd Archipelago
 
 # Start the server with the generated file
 if [ -n "$SERVER_PASSWORD" ]; then
