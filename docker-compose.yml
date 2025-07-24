@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   archipelago-server:
     build:
@@ -9,17 +7,11 @@ services:
     ports:
       - 38281:38281
     volumes:
-      - ./games:/app/games:ro
+      - ./games:/app/games
       - ./config:/app/config:ro
-      - archipelago_data:/app/data
     restart: unless-stopped
     networks:
-      - archipelago-network
-
-volumes:
-  archipelago_data:
-    driver: local
+      - archipelago
 
 networks:
-  archipelago-network:
-    driver: bridge
+  archipelago:

@@ -20,11 +20,11 @@ RUN LATEST_URL=$(curl -s https://api.github.com/repos/ArchipelagoMW/Archipelago/
     ls -la .
 
 # Stage 2: Create runtime image
-FROM alpine:latest
+FROM debian:latest
 
 # Create app directory and user
-RUN addgroup -g 1000 archipelago && \
-    adduser -D -s /bin/sh -u 1000 -G archipelago archipelago
+RUN addgroup --gid 1000 archipelago && \
+    adduser --shell /bin/bash -u 1000 --ingroup archipelago archipelago
 
 WORKDIR /app
 

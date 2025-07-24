@@ -1,33 +1,54 @@
-# Archipelago Server Host Configuration
-# Copy this file to host.yaml and modify as needed
-
-# Server configuration
-host: ""  # Leave empty to bind to all interfaces, or specify IP to bind to specific interface
-port: 38281  # Default Archipelago port
-
-# Room settings
-server_password: ""  # Password required to join the server (leave empty for no password)
-password: ""  # Admin password for server commands
-
-# Game settings
-auto_shutdown: 0  # Auto-shutdown timer in minutes (0 = disabled)
-compatibility: 2  # Network protocol compatibility level
-log_network: 0  # Log network packets (0 = disabled, 1 = enabled)
-
-# Race mode settings
-race: 0  # Enable race mode (0 = disabled, 1 = enabled)
-
-# Release settings
-release_mode: "auto"  # Release mode: "auto", "disabled", "enabled", "goal"
-remaining_mode: "auto"  # Remaining mode: "auto", "disabled", "enabled", "goal"
-
-# Forfeit settings
-auto_forfeit: 0  # Auto-forfeit inactive players after X minutes (0 = disabled)
-
-# Hint settings
-hint_cost: 10  # Cost in points for hints
-location_check_points: 1  # Points awarded for checking locations
-
-# Misc settings
-item_cheat: false  # Allow item cheats
-disable_save: false  # Disable save functionality
+# Options for MultiServer
+# Null means nothing, for the server this means to default the value
+# These overwrite command line arguments!
+server_options:
+  host: null
+  port: 38281
+  password: null
+  multidata: null
+  savefile: /app/data/world.apsave
+  disable_save: false
+  loglevel: "info"
+  logtime: false
+  # Allows for clients to log on and manage the server.  If this is null, no remote administration is possible.
+  server_password: null
+  # Disallow !getitem
+  disable_item_cheat: false
+  # Client hint system
+  # Points given to a player for each acquired item in their world
+  location_check_points: 1
+  # Relative point cost to receive a hint via !hint for players
+  # so for example hint_cost: 20 would mean that for every 20% of available checks, you get the ability to hint,
+  # for a total of 5
+  hint_cost: 10
+  # Release modes
+  # A Release sends out the remaining items *from* a world that releases
+  # "disabled" -> clients can't release,
+  # "enabled" -> clients can always release
+  # "auto" -> automatic release on goal completion
+  # "auto-enabled" -> automatic release on goal completion and manual release is also enabled
+  # "goal" -> release is allowed after goal completion
+  release_mode: "auto"
+  # Collect modes
+  # A Collect sends the remaining items *to* a world that collects
+  # "disabled" -> clients can't collect,
+  # "enabled" -> clients can always collect
+  # "auto" -> automatic collect on goal completion
+  # "auto-enabled" -> automatic collect on goal completion and manual collect is also enabled
+  # "goal" -> collect is allowed after goal completion
+  collect_mode: "auto"
+  # Remaining modes
+  # !remaining handling, that tells a client which items remain in their pool
+  # "enabled" -> Client can always ask for remaining items
+  # "disabled" -> Client can never ask for remaining items
+  # "goal" -> Client can ask for remaining items after goal completion
+  remaining_mode: "goal"
+  # Automatically shut down the server after this many seconds without new location checks, 0 to keep running
+  auto_shutdown: 0
+  # Compatibility handling
+  # 2 -> Recommended for casual/cooperative play, attempt to be compatible with everything across all versions
+  # 1 -> No longer in use, kept reserved in case of future use
+  # 0 -> Recommended for tournaments to force a level playing field, only allow an exact version match
+  compatibility: 2
+  # log all server traffic, mostly for dev use
+  log_network: 0
