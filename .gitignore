@@ -1,0 +1,43 @@
+# Build artifacts and generated files
+output/
+*.tmp
+*.log
+
+# Docker build cache
+.docker/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Archipelago generated files (if testing locally)
+*.archipelago
+spoiler.txt
+AP_*.zip
+
+# Python cache files (if running locally)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so

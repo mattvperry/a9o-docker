@@ -1,0 +1,36 @@
+# Git files
+.git
+.gitignore
+
+# Documentation that's not needed in the container
+*.md
+!players/README.md
+!worlds/README.md
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Build artifacts and temporary files
+*.tmp
+*.log
+output/
+.DS_Store
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
