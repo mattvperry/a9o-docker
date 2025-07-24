@@ -2,22 +2,24 @@ version: '3.8'
 
 services:
   archipelago-server:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: archipelago-server
     ports:
-      - "${ARCHIPELAGO_PORT:-38281}:38281"
-    environment:
-      - ARCHIPELAGO_PORT=${ARCHIPELAGO_PORT:-38281}
-      - ARCHIPELAGO_PASSWORD=${ARCHIPELAGO_PASSWORD:-}
+      - 38281:38281
+    volumes:
+      - ./games:/app/games:ro
+      - ./config:/app/config:ro
+      - archipelago_data:/app/data
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 38281), timeout=5)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     networks:
-      - archipelago
+      - archipelago-network
+
+volumes:
+  archipelago_data:
+    driver: local
 
 networks:
-  archipelago:
+  archipelago-network:
     driver: bridge

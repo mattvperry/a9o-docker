@@ -1,201 +1,227 @@
 # Archipelago Docker Server
 
-A Docker-based solution for hosting Archipelago multiworld servers with support for custom worlds and player configurations.
+A Docker container for hosting Archipelago multiworld servers with automatic latest release downloads and persistent data storage.
 
-## Overview
+## Features
 
-This project provides a reusable Docker setup that:
-- Downloads the latest Archipelago release automatically
-- Supports custom APWorld files for additional games
-- Generates multiworld games from player YAML configurations
-- Hosts the resulting Archipelago server in a containerized environment
-- Creates tagged images for different game configurations
+- 🐳 **Docker & Docker Compose** - Industry standard containerization
+- 📦 **Latest Release** - Automatically downloads the latest Archipelago Linux release during build
+- ⚙️ **Configurable** - Support for custom `host.yaml` configurations
+- 💾 **Persistent Data** - Named volume for server state and save data
+- 🔒 **Security** - Runs as non-root user
+- 🏗️ **Optimized Build** - Multi-stage Docker build with Alpine Linux for minimal image size
+- 🔧 **BuildX Ready** - Optimized layer design for Docker BuildX
 
 ## Quick Start
 
-1. **Add your player configurations:**
+1. **Clone this repository**
    ```bash
-   # Place player YAML files in the players/ directory
-   cp your-player-config.yaml players/
+   git clone <repository-url>
+   cd a9o-docker
    ```
 
-2. **Add custom worlds (optional):**
+2. **Place your .archipelago file**
    ```bash
-   # Place any .apworld files in the worlds/ directory
-   cp CustomGame.apworld worlds/
+   cp /path/to/your/game.archipelago ./games/
    ```
 
-3. **Build and run (using Makefile):**
+3. **Start the server**
    ```bash
-   make build    # Build the Docker image
-   make run      # Run the server in background
-   make logs     # View server logs
+   docker-compose up -d
    ```
 
-   **Or build manually:**
-   ```bash
-   docker build -t my-archipelago-game:v1 .
-   docker run -p 38281:38281 my-archipelago-game:v1
-   ```
-
-4. **Connect to your server:**
-   - Server: `localhost` (or your Docker host IP)
-   - Port: `38281`
-   - Use the slot names from your YAML files
-
-### Available Make Commands
-
-Run `make help` to see all available commands:
-- `make build` - Build the Docker image
-- `make run` - Run the server in background
-- `make run-fg` - Run the server in foreground (see logs)
-- `make stop` - Stop the running server
-- `make logs` - View server logs
-- `make test` - Build and test the server
-- `make clean` - Remove containers and images
+4. **Connect to your server**
+   - **Host:** `localhost` (or your server's IP)
+   - **Port:** `38281`
+   - **Slot Name:** As configured in your YAML file
+   - **Password:** As configured (if any)
 
 ## Directory Structure
 
 ```
 a9o-docker/
-├── Dockerfile                 # Multi-stage Docker build
-├── docker-compose.yml         # Compose setup for easy deployment
-├── players/                   # Player YAML configuration files
-│   ├── .gitignore
-│   └── README.md             # Instructions for creating player configs
-├── worlds/                    # Custom APWorld files
-│   ├── .gitignore
-│   └── README.md             # Instructions for custom worlds
-├── scripts/                   # Build and runtime scripts
-│   ├── download-archipelago.sh
-│   ├── generate-world.sh
-│   └── start-server.sh
-├── .gitignore
-├── .dockerignore
-└── README.md
+├── docker-compose.yml          # Docker Compose configuration
+├── Dockerfile                  # Multi-stage Docker build
+├── entrypoint.sh              # Container startup script
+├── .dockerignore              # Build optimization
+├── config/
+│   └── host.yaml.example      # Example server configuration
+├── games/                     # Place .archipelago files here
+└── data/                      # Persistent server data (managed by Docker)
 ```
 
-## Usage
+## Configuration
 
-### Building Different Game Configurations
+### Custom Host Configuration
 
-Each build creates a unique image with a specific set of players and worlds:
+1. Copy the example configuration:
+   ```bash
+   cp config/host.yaml.example config/host.yaml
+   ```
 
-```bash
-# Build a game for your friend group
-cp alice.yaml bob.yaml charlie.yaml players/
-docker build -t friend-group-game:jan2025 .
+2. Edit `config/host.yaml` with your preferred settings:
+   ```yaml
+   # Example customizations
+   server_password: "your-password"  # Require password to join
+   auto_shutdown: 60                 # Auto-shutdown after 60 minutes of inactivity
+   race: 1                          # Enable race mode
+   ```
 
-# Build a different game with custom worlds
-cp custom-world.apworld worlds/
-cp different-players.yaml players/
-docker build -t custom-world-game:v1 .
-```
-
-### Using Docker Compose
-
-For easier deployment with environment configuration:
-
-```bash
-# Create a .env file (optional)
-echo "ARCHIPELAGO_PORT=38281" > .env
-echo "ARCHIPELAGO_PASSWORD=mypassword" >> .env
-
-# Start the server
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-```
+3. Restart the container:
+   ```bash
+   docker-compose restart
+   ```
 
 ### Environment Variables
 
-- `ARCHIPELAGO_PORT`: Server port (default: 38281)
-- `ARCHIPELAGO_PASSWORD`: Optional server password
+You can override certain settings via environment variables in `docker-compose.yml`:
 
-### Advanced Usage
+- `PORT`: Server port (default: 38281)
 
-#### Custom Port
+## Usage
+
+### Starting the Server
+
 ```bash
-docker run -p 9999:38281 -e ARCHIPELAGO_PORT=38281 my-game:v1
-# Server accessible on port 9999 externally
+# Start in background
+docker-compose up -d
+
+# Start with logs visible
+docker-compose up
+
+# Build and start (after changes)
+docker-compose up --build
 ```
 
-#### Password Protection
+### Viewing Logs
+
 ```bash
-docker run -p 38281:38281 -e ARCHIPELAGO_PASSWORD=secretpassword my-game:v1
+# Follow logs
+docker-compose logs -f archipelago-server
+
+# View recent logs
+docker-compose logs --tail=50 archipelago-server
 ```
 
-## Player Configuration
+### Stopping the Server
 
-See `players/README.md` for detailed instructions on creating player YAML files.
+```bash
+# Stop the server
+docker-compose down
 
-Quick example:
-```yaml
-name: PlayerName
-game: A Link to the Past
-A Link to the Past:
-  progression_balancing: 50
-  accessibility: items
+# Stop and remove volumes (WARNING: This deletes save data!)
+docker-compose down -v
 ```
 
-## Custom Worlds
+## Building with Docker BuildX
 
-See `worlds/README.md` for instructions on adding custom APWorld files.
+For optimal builds with BuildX:
 
-## How It Works
+```bash
+# Create and use a new builder
+docker buildx create --name archipelago-builder --use
 
-### Build Process (Generation)
-1. Downloads latest Archipelago from GitHub
-2. Installs custom APWorld files if present
-3. Copies player YAML configurations
-4. Runs Archipelago generation to create .archipelago file
-5. Creates optimized runtime image with generated data
+# Build for multiple platforms
+docker buildx build --platform linux/amd64,linux/arm64 -t archipelago-server:latest .
 
-### Runtime Process (Hosting)
-1. Starts Archipelago server with pre-generated .archipelago file
-2. Exposes server on configured port
-3. Provides health checks for monitoring
+# Build and push to registry
+docker buildx build --platform linux/amd64,linux/arm64 -t your-registry/archipelago-server:latest --push .
+```
+
+## Persistent Data
+
+The container uses a named Docker volume (`archipelago_data`) to persist server state and save data. This ensures your game progress is retained across container updates and restarts.
+
+To backup your save data:
+```bash
+# Create a backup
+docker run --rm -v archipelago_data:/data -v $(pwd):/backup alpine tar czf /backup/archipelago-backup.tar.gz -C /data .
+
+# Restore from backup
+docker run --rm -v archipelago_data:/data -v $(pwd):/backup alpine tar xzf /backup/archipelago-backup.tar.gz -C /data
+```
 
 ## Troubleshooting
 
-### Build Issues
-- Ensure YAML files are valid (check syntax)
-- Verify APWorld files are compatible with current Archipelago version
-- Check Docker build logs for specific errors
+### Server Won't Start
 
-### Runtime Issues
-- Verify port 38281 is not already in use
-- Check that generated .archipelago file exists
-- Review server logs: `docker logs <container-name>`
+1. Check that you have a `.archipelago` file in the `games/` directory:
+   ```bash
+   ls -la games/
+   ```
+
+2. Check the container logs:
+   ```bash
+   docker-compose logs archipelago-server
+   ```
 
 ### Connection Issues
-- Confirm server is running: `docker ps`
-- Test port connectivity: `telnet localhost 38281`
-- Verify slot names match YAML configurations
 
-## Development
+1. Verify the server is running:
+   ```bash
+   docker-compose ps
+   ```
 
-The project uses a multi-stage Docker build:
-- **Builder stage**: Downloads Archipelago, installs worlds, generates game
-- **Runtime stage**: Lightweight image with only server components
+2. Check port binding:
+   ```bash
+   docker-compose port archipelago-server 38281
+   ```
 
-Scripts are modular and can be run independently for testing.
+3. Ensure firewall allows connections on port 38281
 
-## License
+### Performance Issues
 
-MIT License - see LICENSE file for details.
+1. Check container resource usage:
+   ```bash
+   docker stats archipelago-server
+   ```
 
-## Contributing
+2. Consider allocating more resources in `docker-compose.yml`:
+   ```yaml
+   services:
+     archipelago-server:
+       deploy:
+         resources:
+           limits:
+             memory: 1G
+             cpus: '1.0'
+   ```
 
-1. Fork the repository
-2. Create your feature branch
-3. Test your changes with different YAML/APWorld combinations
-4. Submit a pull request
+## Advanced Usage
 
-## Related Links
+### Running Multiple Servers
 
-- [Archipelago Official Site](https://archipelago.gg/)
+To run multiple Archipelago servers, create separate docker-compose files or use different service names:
+
+```yaml
+# docker-compose.multi.yml
+version: '3.8'
+services:
+  archipelago-server-1:
+    # ... configuration for server 1
+    ports:
+      - "38281:38281"
+  
+  archipelago-server-2:
+    # ... configuration for server 2  
+    ports:
+      - "38282:38281"
+```
+
+### Custom Archipelago Version
+
+To use a specific Archipelago version instead of latest, modify the Dockerfile:
+
+```dockerfile
+# Replace the dynamic download with a specific version
+RUN curl -L -o archipelago.zip "https://github.com/ArchipelagoMW/Archipelago/releases/download/0.4.4/Archipelago_0.4.4_linux.zip"
+```
+
+## Support
+
+For Archipelago-specific questions, visit:
+- [Archipelago Website](https://archipelago.gg)
+- [Archipelago Discord](https://discord.gg/8Z65BR2)
 - [Archipelago GitHub](https://github.com/ArchipelagoMW/Archipelago)
-- [Game Setup Guides](https://archipelago.gg/tutorial/)
-- [APWorld Development](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md)
+
+For Docker-related issues with this container, please open an issue in this repository.

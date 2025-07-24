@@ -1,6 +1,0 @@
-# Ignore all YAML files (player configurations)
-*.yaml
-*.yml
-
-# Keep the README for instructions
-!README.md

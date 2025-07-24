@@ -1,64 +1,49 @@
-# Multi-stage build for Archipelago server
-FROM python:3.11-slim as builder
+# Multi-stage Dockerfile for Archipelago Server
+# Stage 1: Download and extract latest Archipelago release
+FROM alpine:latest AS downloader
 
-# Install system dependencies needed for Archipelago
-RUN apt-get update && apt-get install -y \
-    wget \
-    unzip \
-    curl \
-    git \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Install curl and jq for downloading and extracting
+RUN apk add --no-cache curl jq
 
-# Set working directory
+# Create working directory
+WORKDIR /tmp
+
+# Download latest Archipelago Linux release
+RUN LATEST_URL=$(curl -s https://api.github.com/repos/ArchipelagoMW/Archipelago/releases/latest | \
+    jq -r '.assets[] | select(.name | contains("linux-x86_64.tar.gz")) | .browser_download_url') && \
+    echo "Downloading: $LATEST_URL" && \
+    curl -L -o archipelago.tar.gz "$LATEST_URL" && \
+    tar -xzf archipelago.tar.gz && \
+    mv Archipelago/* . && \
+    rmdir Archipelago && \
+    rm archipelago.tar.gz && \
+    ls -la .
+
+# Stage 2: Create runtime image
+FROM alpine:latest
+
+# Create app directory and user
+RUN addgroup -g 1000 archipelago && \
+    adduser -D -s /bin/sh -u 1000 -G archipelago archipelago
+
 WORKDIR /app
 
-# Copy build scripts
-COPY scripts/ ./scripts/
-RUN chmod +x scripts/*.sh
+# Copy Archipelago files from downloader stage
+COPY --from=downloader --chown=archipelago:archipelago /tmp /app
 
-# Download and extract latest Archipelago
-RUN ./scripts/download-archipelago.sh
+# Create necessary directories
+RUN mkdir -p /app/config /app/games /app/data && \
+    chown -R archipelago:archipelago /app
 
-# Copy user files for generation
-COPY worlds/ ./worlds/
-COPY players/ ./players/
-
-# Generate the .archipelago file
-RUN ./scripts/generate-world.sh
-
-# Runtime stage
-FROM python:3.11-slim as runtime
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create archipelago user
-RUN useradd -m -u 1000 archipelago
-
-# Set working directory
-WORKDIR /app
-
-# Copy Archipelago installation from builder
-COPY --from=builder --chown=archipelago:archipelago /app/Archipelago/ ./Archipelago/
-
-# Copy generated .archipelago file
-COPY --from=builder --chown=archipelago:archipelago /app/output/ ./output/
-
-# Copy startup script
-COPY --chown=archipelago:archipelago scripts/start-server.sh ./
-RUN chmod +x start-server.sh
+# Create entrypoint script
+COPY --chown=archipelago:archipelago entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Switch to non-root user
 USER archipelago
 
-# Expose Archipelago default port
+# Expose default Archipelago port
 EXPOSE 38281
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import socket; socket.create_connection(('localhost', 38281), timeout=5)" || exit 1
-
-# Start the server
-CMD ["./start-server.sh"]
+# Set entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]

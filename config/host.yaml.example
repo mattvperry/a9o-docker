@@ -1,0 +1,33 @@
+# Archipelago Server Host Configuration
+# Copy this file to host.yaml and modify as needed
+
+# Server configuration
+host: ""  # Leave empty to bind to all interfaces, or specify IP to bind to specific interface
+port: 38281  # Default Archipelago port
+
+# Room settings
+server_password: ""  # Password required to join the server (leave empty for no password)
+password: ""  # Admin password for server commands
+
+# Game settings
+auto_shutdown: 0  # Auto-shutdown timer in minutes (0 = disabled)
+compatibility: 2  # Network protocol compatibility level
+log_network: 0  # Log network packets (0 = disabled, 1 = enabled)
+
+# Race mode settings
+race: 0  # Enable race mode (0 = disabled, 1 = enabled)
+
+# Release settings
+release_mode: "auto"  # Release mode: "auto", "disabled", "enabled", "goal"
+remaining_mode: "auto"  # Remaining mode: "auto", "disabled", "enabled", "goal"
+
+# Forfeit settings
+auto_forfeit: 0  # Auto-forfeit inactive players after X minutes (0 = disabled)
+
+# Hint settings
+hint_cost: 10  # Cost in points for hints
+location_check_points: 1  # Points awarded for checking locations
+
+# Misc settings
+item_cheat: false  # Allow item cheats
+disable_save: false  # Disable save functionality

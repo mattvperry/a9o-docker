@@ -2,35 +2,26 @@
 .git
 .gitignore
 
-# Documentation that's not needed in the container
-*.md
-!players/README.md
-!worlds/README.md
+# Documentation
+README.md
+LICENSE
+
+# Local data directories (these are mounted at runtime)
+data/
+games/
 
 # Docker files
-Dockerfile
 docker-compose.yml
-.dockerignore
+docker-compose.override.yml
 
-# Build artifacts and temporary files
-*.tmp
-*.log
-output/
-.DS_Store
-Thumbs.db
-
-# IDE and editor files
+# Development files
 .vscode/
-.idea/
-*.swp
-*.swo
-*~
+*.log
 
-# OS generated files
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
