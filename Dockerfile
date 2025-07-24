@@ -58,7 +58,7 @@ EXPOSE 38281
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import socket; socket.create_connection(('localhost', 38281), timeout=5)" || exit 1
+    CMD python -c "import socket; socket.create_connection(('localhost', 38281), timeout=5)" || exit 1
 
 # Start the server
 CMD ["./start-server.sh"]

@@ -10,7 +10,7 @@ services:
       - ARCHIPELAGO_PASSWORD=${ARCHIPELAGO_PASSWORD:-}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; socket.create_connection(('localhost', 38281), timeout=5)"]
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 38281), timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3

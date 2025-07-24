@@ -27,6 +27,8 @@ fi
 # Copy APWorld files to worlds directory if they exist
 if [ -d "worlds" ] && [ "$(ls -A worlds/*.apworld 2>/dev/null)" ]; then
     echo "Copying APWorld files..."
+    # Create worlds directory if it doesn't exist
+    mkdir -p Archipelago/worlds/
     cp worlds/*.apworld Archipelago/worlds/ 2>/dev/null || true
 fi
 
@@ -35,7 +37,7 @@ cd Archipelago
 
 # Run the generation
 echo "Running Archipelago generation..."
-python3 ArchipelagoGenerate.py
+./ArchipelagoGenerate
 
 # Check if generation was successful
 if [ ! -d "output" ] || [ -z "$(ls -A output/*.archipelago 2>/dev/null)" ]; then

@@ -27,8 +27,8 @@ cd Archipelago
 # Start the server with the generated file
 if [ -n "$SERVER_PASSWORD" ]; then
     echo "Starting server with password protection"
-    python3 ArchipelagoServer.py "../$ARCHIPELAGO_FILE" --port "$SERVER_PORT" --password "$SERVER_PASSWORD"
+    ./ArchipelagoServer "../$ARCHIPELAGO_FILE" --port "$SERVER_PORT" --password "$SERVER_PASSWORD"
 else
     echo "Starting server without password"
-    python3 ArchipelagoServer.py "../$ARCHIPELAGO_FILE" --port "$SERVER_PORT"
+    ./ArchipelagoServer "../$ARCHIPELAGO_FILE" --port "$SERVER_PORT"
 fi
